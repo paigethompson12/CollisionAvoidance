@@ -12,22 +12,22 @@ public class CollisionAvoidance : SteeringBehavior
 
     public override SteeringOutput getSteering()
     {
-        float shortestTime = float.PositiveInfinity;
+        float shortestTime = float.PositiveInfinity; //this is so the shortest time could be updated looking at the time to collision
 
         Kinematic firstTarget = null;
-        float firstMinSeparation = float.PositiveInfinity;
+        float firstMinSeparation = float.PositiveInfinity; //initializing all these to be infinity so they can be updated
         float firstDistance = float.PositiveInfinity;
         Vector3 firstRelativePos = Vector3.positiveInfinity;
         Vector3 firstRelativeVel = Vector3.zero;
 
-        // Loop through each target
-        Vector3 relativePos = Vector3.positiveInfinity;
+        // loop through each target
+        Vector3 relativePos = Vector3.positiveInfinity; //in my case, it's all the other red blocks
         foreach (Kinematic target in targetArray)
         {
-            relativePos = target.transform.position - character.transform.position;
-            Vector3 relativeVel = character.linearVelocity - target.linearVelocity;
+            relativePos = target.transform.position - character.transform.position; //get the relative position in relation to the target
+            Vector3 relativeVel = character.linearVelocity - target.linearVelocity; //same as above but for velocity
             float relativeSpeed = relativeVel.magnitude;
-            float timeToCollision = (Vector3.Dot(relativePos, relativeVel) / (relativeSpeed * relativeSpeed));
+            float timeToCollision = (Vector3.Dot(relativePos, relativeVel) / (relativeSpeed * relativeSpeed)); //getting the estimated collision time based on the relatives above
 
             // check if it is going to be a collision at all
             float distance = relativePos.magnitude;
@@ -37,7 +37,7 @@ public class CollisionAvoidance : SteeringBehavior
 
             if (timeToCollision > 0 && timeToCollision < shortestTime)
             {
-                shortestTime = timeToCollision;
+                shortestTime = timeToCollision;  //update all these variables if the time to collision is near
                 firstTarget = target;
                 firstMinSeparation = minSeparation;
                 firstDistance = distance;
@@ -49,11 +49,11 @@ public class CollisionAvoidance : SteeringBehavior
         if (firstTarget == null)
             return null;
 
-
+        //generate a new steering output to update the linear velocity in respect to the first target's transsform
         SteeringOutput result = new SteeringOutput();
 
         float dotResult = Vector3.Dot(character.linearVelocity.normalized, firstTarget.linearVelocity.normalized);
-        if (dotResult < -0.9)
+        if (dotResult < -0.9) 
             result.linear = -firstTarget.transform.right;
         else
             result.linear = -firstTarget.linearVelocity;
