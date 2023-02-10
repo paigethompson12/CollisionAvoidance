@@ -4,36 +4,27 @@ using UnityEngine;
 
 public class ObstacleAvoidance : Seek
 {
-    // detector: CollisionDetector
-    // the minimum distance to hit a wall (i.e. how far to avoid 
-    // collision) should be greater than the radius of the character.
-    float avoidDistance = 50f; // 3
+    //the minimum distance that the character should be avoiding
+    float avoidDistance = 50f; 
 
-    // The distance to look ahead for a collision
-    // (i.e. the length of the collision ray)
-    float lookahead = 15f; // 5
+    // The distance to look ahead for a collision, i lengthened this a bit
+    float lookahead = 15f; 
 
     protected override Vector3 getTargetPosition()
     {
-        // Cast a ray and see if there's anything to avoid
+        // cast a ray to see if there is something in the distance
         RaycastHit hit; 
-        //if (Physics.Raycast(character.transform.position, character.transform.TransformDirection(Vector3.forward), out hit, lookahead))
         if (Physics.Raycast(character.transform.position, character.linearVelocity, out hit, lookahead))
         {
             Debug.DrawRay(character.transform.position, character.linearVelocity.normalized * hit.distance, Color.red, 1f);
             Debug.Log("Hit " + hit.collider);
-            return hit.point - (hit.normal * avoidDistance);
+            return hit.point - (hit.normal * avoidDistance); //red if it's hitting an obstacle
         }
         else
         {
-            Debug.DrawRay(character.transform.position, character.linearVelocity.normalized * lookahead, Color.blue, 1f);
-            //Debug.Log("safe");
-            // nothing to avoid
+            Debug.DrawRay(character.transform.position, character.linearVelocity.normalized * lookahead, Color.blue, 1f); //blue if it's not hitting an obstacle
             return base.getTargetPosition();
-            //return Vector3.positiveInfinity; // hack because I can't return null
         }
-        
-        //return base.getTargetPosition();
     }
 
 }
